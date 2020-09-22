@@ -1,7 +1,9 @@
 package org.vaadin.erik.ui;
 
 import com.vaadin.flow.component.AttachEvent;
+import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
+import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
@@ -13,7 +15,7 @@ import org.vaadin.erik.backend.service.DefectService;
 import java.io.ByteArrayInputStream;
 
 @Route("defects")
-public class DefectListView extends HorizontalLayout {
+public class DefectListView extends Div {
 
     private final DefectService defectService;
 
@@ -23,27 +25,29 @@ public class DefectListView extends HorizontalLayout {
 
     private void init() {
         addClassName("defect-reports");
-        setSpacing(false);
         defectService.getAllDefects().forEach(this::createDefectCard);
     }
 
     private void createDefectCard(Defect defect) {
-        VerticalLayout defectCard = new VerticalLayout();
+        Div defectCard = new Div();
         defectCard.addClassName("defect-card");
         if (defect.getImage() != null) {
             defectCard.add(createImage(defect));
         }
-        defectCard.add(new Text(defect.getDescription()));
+        Div textDiv = new Div(new Text(defect.getDescription()));
+        textDiv.addClassName("defect-text");
+        defectCard.add(textDiv);
         add(defectCard);
     }
 
-    private Image createImage(Defect defect) {
+    private Component createImage(Defect defect) {
         byte[] data = defect.getImage().getData();
         String filename = defect.getImage().getFilename();
         StreamResource streamResource = new StreamResource(filename, () -> new ByteArrayInputStream(data));
         Image image = new Image(streamResource, filename);
-        image.addClassName("defect-image");
-        return image;
+        Div wrapper = new Div(image);
+        wrapper.addClassName("defect-image");
+        return wrapper;
     }
 
     @Override

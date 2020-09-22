@@ -47,8 +47,7 @@
     "@vaadin/vaadin-upload": "4.4.0",
     "lit-element": "2.3.1",
     "@vaadin/vaadin-date-time-picker": "1.3.0",
-    "@vaadin/form": "./target/flow-frontend/form",
-    "open": "^7.2.1"
+    "@vaadin/form": "./target/flow-frontend/form"
   },
   "devDependencies": {
     "webpack": "4.42.0",
@@ -141,6 +140,6 @@
       "lit-html": "1.2.1",
       "@types/validator": "10.11.3"
     },
-    "hash": "6a2fe7c07d223171af7a5e99d30aad53884c36de3f5393365c25b0edf832ece0"
+    "hash": "897809c4af1d08a6548ca4d38c8ad28f02a77f5ee4eb551d4f4c6c5921be5969"
   }
 }

@@ -9,20 +9,35 @@ $_documentContainer.innerHTML = `
     html {
     }
     .defect-reports {
-        padding: var(--lumo-space-l) 0;
-        display: flex;
-        justify-content: space-evenly;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: auto auto auto;
+        grid-gap: var(--lumo-space-l);
+        padding: var(--lumo-space-l);
+        background-color: var(--lumo-contrast-10pct);
     }
     .defect-card {
-        margin: 0;
-        flex-basis: 31%;
-        overflow: hidden;
+        display: flex;
+        flex-flow: column;
+        justify-content: flex-end;
+        padding: var(--lumo-space-m);
         box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.4);
+        background-color: var(--lumo-base-color);
     }
-    .defect-card .defect-image {
+    .defect-card, .defect-image, .defect-text {
+        box-sizing: border-box;
+    }
+    .defect-image {
+        display: flex;
+        justify-content: center;
         width: 100%;
-        overflow: hidden;
+    }
+    .defect-image img {
+        width: auto;
+        max-width: 100%;
+        max-height: 100%;
+    }
+    .defect-text {
+        padding-top: var(--lumo-space-m);
     }
   </style>
 </custom-style>
@@ -59,6 +74,15 @@ $_documentContainer.innerHTML = `
       }
     </style>
   </template>
+</dom-module>
+<dom-module id="upload-file" theme-for="vaadin-upload-file">
+    <template>
+        <style>
+            :host(.no-auto) [part="progress"], :host(.no-auto) [part="start-button"] {
+                display: none;
+            }
+        </style>
+    </template>
 </dom-module>
 `;
 

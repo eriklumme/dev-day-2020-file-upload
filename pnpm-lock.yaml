@@ -45,7 +45,6 @@ dependencies:
   '@vaadin/vaadin-time-picker': 2.3.0
   '@vaadin/vaadin-upload': 4.4.0
   lit-element: 2.3.1
-  open: 7.2.1
 devDependencies:
   '@types/validator': 10.11.3
   awesome-typescript-loader: 5.2.1_typescript@3.8.3
@@ -4022,13 +4021,6 @@ packages:
       node: '>=0.10.0'
     resolution:
       integrity: sha512-2eis5WqQGV7peooDyLmNEPUrps9+SXX5c9pL3xEB+4e9HnGuDa7mB7kHxHw4CbqS9k1T2hOH3miL8n8WtiYVtg==
-  /is-docker/2.1.1:
-    dev: false
-    engines:
-      node: '>=8'
-    hasBin: true
-    resolution:
-      integrity: sha512-ZOoqiXfEwtGknTiuDEy8pN2CfE3TxMHprvNer1mXiqwkOT77Rw3YVrUQ52EqAOU3QAWDQ+bQdx7HJzrv7LS2Hw==
   /is-extendable/0.1.1:
     dev: true
     engines:
@@ -4157,14 +4149,6 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-HxbkqiKwTRM2tmGIpmrzxgDDpm0=
-  /is-wsl/2.2.0:
-    dependencies:
-      is-docker: 2.1.1
-    dev: false
-    engines:
-      node: '>=8'
-    resolution:
-      integrity: sha512-fKzAra0rGJUUBwGBgNkHZuToZcn+TtXHpeCgmkMJMMYx1sQDYaCSyjJBSCa2nH1DGm7s3n1oBnohoVTBaN7Lww==
   /isarray/1.0.0:
     dev: true
     resolution:
@@ -4926,15 +4910,6 @@ packages:
       node: '>=4'
     resolution:
       integrity: sha1-BnQoIw/WdEOyeUsiu6UotoZ5YtQ=
-  /open/7.2.1:
-    dependencies:
-      is-docker: 2.1.1
-      is-wsl: 2.2.0
-    dev: false
-    engines:
-      node: '>=8'
-    resolution:
-      integrity: sha512-xbYCJib4spUdmcs0g/2mK1nKo/jO2T7INClWd/beL7PFkXRWgr8B23ssDHX/USPn2M2IjDR5UdpYs6I67SnTSA==
   /opn/5.5.0:
     dependencies:
       is-wsl: 1.1.0
@@ -6831,7 +6806,6 @@ specifiers:
   html-webpack-plugin: 3.2.0
   lit-element: 2.3.1
   lit-html: 1.2.1
-  open: ^7.2.1
   progress-webpack-plugin: 0.0.24
   raw-loader: 4.0.0
   script-ext-html-webpack-plugin: 2.1.4
