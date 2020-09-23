@@ -7,3 +7,7 @@ declare module '*.css' {
     const content: string;
     export default content;
 }
+
+interface Window {
+    addFile(file: any): Promise<any>;
+}

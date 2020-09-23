@@ -59,19 +59,30 @@ export class DefectReportView extends LitElement {
 
     _reportDefect() {
         if (this.descriptionField.validate()) {
-            ReportDefectEndpoint.postDefect(this.descriptionField.value)
-                .then(uuid => {
-                    this.uuid = uuid;
-                    this.shadowRoot?.querySelectorAll('vaadin-upload-file')
-                        .forEach((el: any) => el.classList.remove('no-auto'));
-                    console.log("uploading");
-                    this.uploadField.uploadFiles();
-                })
-                .catch(e => {
-                    alert("An error occurred.");
-                    console.error(e);
-                });
+            this._storeFile().then(fileId => {
+                console.log(fileId);
+
+                ReportDefectEndpoint.postDefect(this.descriptionField.value)
+                    .then(uuid => {
+                        this.uuid = uuid;
+                        this.shadowRoot?.querySelectorAll('vaadin-upload-file')
+                            .forEach((el: any) => el.classList.remove('no-auto'));
+                        this.uploadField.uploadFiles();
+                    })
+                    .catch(e => {
+                        alert("An error occurred.");
+                        console.error(e);
+                    });
+            });
         }
+    }
+
+    _storeFile(): Promise<any> {
+        if (this.uploadField.files.length == 0) {
+            return Promise.resolve(null);
+        }
+        const file = this.uploadField.files[0];
+        return window.addFile(file);
     }
 
     protected firstUpdated() {
