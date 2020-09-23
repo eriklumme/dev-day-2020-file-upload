@@ -60,9 +60,7 @@ export class DefectReportView extends LitElement {
     _reportDefect() {
         if (this.descriptionField.validate()) {
             this._storeFile().then(fileId => {
-                console.log(fileId);
-
-                ReportDefectEndpoint.postDefect(this.descriptionField.value)
+                ReportDefectEndpoint.postDefect(this.descriptionField.value, fileId)
                     .then(uuid => {
                         this.uuid = uuid;
                         this.shadowRoot?.querySelectorAll('vaadin-upload-file')

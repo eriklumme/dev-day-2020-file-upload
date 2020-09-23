@@ -1,7 +1,7 @@
 const FILES = 'files';
 
-function _createFileDB() {
-    if (!('indexedDB' in window)) {
+self._createFileDB = function() {
+    if (!('indexedDB' in self)) {
         return null;
     }
     return idb.openDB('FileDB', 5, {
@@ -16,8 +16,8 @@ function _createFileDB() {
 /**
  * Adds a file and returns its ID
  */
-function addFile(file) {
-    return _createFileDB()
+self.addFile = function(file) {
+    return self._createFileDB()
         .then(db => {
             const tx = db.transaction(FILES, 'readwrite');
             return Promise.all([
@@ -25,4 +25,18 @@ function addFile(file) {
                 tx.done
             ]).then(result => result[0]);
         });
+}
+
+/**
+ * Gets a file based on its ID
+ */
+self.getFile = function(id) {
+    return self._createFileDB().then(db => db.get(FILES, id));
+}
+
+/**
+ * Updates a file object
+ */
+self.updateFile = function(fileObj) {
+    return self._createFileDB().then(db => db.put(FILES, fileObj));
 }

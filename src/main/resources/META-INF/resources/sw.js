@@ -14,7 +14,7 @@ workbox.precaching.precacheAndRoute([
     { url: 'manifest.webmanifest', revision: '99940210' }
 ]);
 self.addEventListener('fetch', function(event) {
-    var request = event.request;
+    const request = event.request;
     if (request.mode === 'navigate') {
         event.respondWith(
             fetch(request)
@@ -27,13 +27,36 @@ self.addEventListener('fetch', function(event) {
 });
 
 // Defect posts
-self.addEventListener('fetch', function(event) {
+self.addEventListener('fetch', async function(event) {
     const request = event.request;
     if (request.url.endsWith('/postDefect')) {
-        return fetch(request)
-            .then(response => {
-                response.text().then(uuid => console.log("Uuid: " + uuid));
-                return response;
+        console.log("Logging request 7");
+        const requestClone = event.request.clone();
+
+        return fetch(request).then(response => {
+
+            requestClone.json().then(json => {
+                // Extract the fileId from the JSON payload of the request
+                if (json.fileId) {
+                    Promise.all([
+                        response.text(),
+                        self.getFile(json.fileId)
+                    ]).then(result => {
+                        // The defect's UUID is returned from the server after posting it
+                        const uuid = result[0];
+                        // and the file is loaded based on the file ID
+                        const file = result[1];
+
+                        if (uuid && file) {
+                            file.uuid = uuid;
+                            self.updateFile(file).then(_ => console.log(
+                                `File ${json.fileId} has been updated to UUID [${uuid}] :)`));
+                        }
+                    });
+                }
             });
+
+            return response;
+        });
     }
 });
