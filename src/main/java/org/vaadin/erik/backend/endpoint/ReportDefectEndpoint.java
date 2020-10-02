@@ -1,14 +1,14 @@
 package org.vaadin.erik.backend.endpoint;
 
 import com.vaadin.flow.server.connect.Endpoint;
-import com.vaadin.flow.server.connect.auth.AnonymousAllowed;
 import org.vaadin.erik.backend.entity.Defect;
 import org.vaadin.erik.backend.service.DefectService;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotBlank;
 
 @Endpoint
-@AnonymousAllowed
+@RolesAllowed("USER")
 public class ReportDefectEndpoint {
 
     private final DefectService defectService;
