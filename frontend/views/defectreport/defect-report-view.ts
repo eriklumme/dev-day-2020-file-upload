@@ -85,14 +85,18 @@ export class DefectReportView extends LitElement {
 
     protected firstUpdated() {
         this.uploadField.addEventListener('upload-request', (e: any) => {
-            e.detail.formData.append('defectId', this.defectId);
-            e.detail.formData.append('ASD', this.defectId);
+            e.detail.formData.append('defect_id', this.defectId);
         });
-        this.uploadField.addEventListener('upload-response', (_: any) => {
-            this.defectId = undefined;
-            this.uploadField.files = [];
-            this.descriptionField.value = '';
-            alert('Defect has been posted');
+        this.uploadField.addEventListener('upload-response', (e: any) => {
+            const status = e.detail.xhr.status;
+            if (status >= 200 && status < 300) {
+                this.defectId = undefined;
+                this.uploadField.files = [];
+                this.descriptionField.value = '';
+                alert('Defect has been posted');
+            } else {
+                alert("An error occurred while attempting to upload the file");
+            }
         });
         this.uploadField.addEventListener('upload-progress', this._updateFiles.bind(this));
         this.uploadField.addEventListener('upload-success', this._updateFiles.bind(this));
