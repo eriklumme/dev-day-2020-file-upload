@@ -7,6 +7,7 @@ import org.vaadin.erik.backend.repository.DefectRepository;
 import org.vaadin.erik.backend.repository.ImageRepository;
 
 import javax.transaction.Transactional;
+import java.util.Optional;
 
 @Service
 public class ImageService {
@@ -20,21 +21,18 @@ public class ImageService {
     }
 
     @Transactional
-    public void saveFile(byte[] data, String filename, String uuid) throws UuidNotFoundException {
-        Defect defect = defectRepository.findByUuid(uuid);
-        if (defect == null) {
-            throw new UuidNotFoundException();
+    public void saveFile(byte[] data, String filename, Long defectId) {
+        Optional<Defect> defect = defectRepository.findById(defectId);
+        if (!defect.isPresent()) {
+            throw new IllegalArgumentException("Failed to find defect with id [" + defectId + "]");
         }
-        Image image = imageRepository.findById(defect.getId()).orElseGet(() -> {
+        Image image = imageRepository.findById(defectId).orElseGet(() -> {
                 Image i = new Image();
-                i.setDefect(defect);
+                i.setDefect(defect.get());
                 return i;
         });
         image.setData(data);
         image.setFilename(filename);
         imageRepository.save(image);
-    }
-
-    public static class UuidNotFoundException extends Exception {
     }
 }

@@ -25,9 +25,12 @@ public class FileServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String uuid = req.getParameter("uuid");
-        if (uuid == null) {
-            throw new ServletException("UUID must be provided");
+        String defectIdString = req.getParameter("defect_id");
+        long defectId;
+        try {
+            defectId = Long.parseLong(defectIdString);
+        } catch (NumberFormatException e) {
+            throw new ServletException("Invalid defectId [" + defectIdString + "] must be provided");
         }
 
         Part filePart = req.getPart("file");
@@ -38,9 +41,7 @@ public class FileServlet extends HttpServlet {
         try {
             byte[] data = new byte[(int) filePart.getSize()];
             filePart.getInputStream().read(data);
-            imageService.saveFile(data, filePart.getSubmittedFileName(), uuid);
-        } catch (ImageService.UuidNotFoundException e) {
-            throw new ServletException("Invalid UUID supplied");
+            imageService.saveFile(data, filePart.getSubmittedFileName(), defectId);
         } catch (IOException e) {
             throw new ServletException("An internal error occurred");
         }

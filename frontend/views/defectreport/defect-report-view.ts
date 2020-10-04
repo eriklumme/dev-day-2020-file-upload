@@ -16,7 +16,7 @@ export class DefectReportView extends LitElement {
     @query('#upload')
     uploadField: any;
 
-    uuid?: string;
+    defectId?: number;
 
     static get styles() {
         return [
@@ -59,10 +59,10 @@ export class DefectReportView extends LitElement {
 
     _reportDefect() {
         if (this.descriptionField.validate()) {
-            this._storeFile().then(fileId => {
-                ReportDefectEndpoint.postDefect(this.descriptionField.value, fileId)
-                    .then(uuid => {
-                        this.uuid = uuid;
+            this._storeFile().then(_ => {
+                ReportDefectEndpoint.postDefect(this.descriptionField.value)
+                    .then(defectId => {
+                        this.defectId = defectId;
                         this.shadowRoot?.querySelectorAll('vaadin-upload-file')
                             .forEach((el: any) => el.classList.remove('no-auto'));
                         this.uploadField.uploadFiles();
@@ -85,10 +85,11 @@ export class DefectReportView extends LitElement {
 
     protected firstUpdated() {
         this.uploadField.addEventListener('upload-request', (e: any) => {
-            e.detail.formData.append('uuid', this.uuid);
+            e.detail.formData.append('defectId', this.defectId);
+            e.detail.formData.append('ASD', this.defectId);
         });
         this.uploadField.addEventListener('upload-response', (_: any) => {
-            this.uuid = undefined;
+            this.defectId = undefined;
             this.uploadField.files = [];
             this.descriptionField.value = '';
             alert('Defect has been posted');

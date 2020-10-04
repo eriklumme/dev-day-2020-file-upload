@@ -42,15 +42,15 @@ self.addEventListener('fetch', async function(event) {
                         response.text(),
                         self.getFile(json.fileId)
                     ]).then(result => {
-                        // The defect's UUID is returned from the server after posting it
-                        const uuid = result[0];
+                        // The defect's ID is returned from the server after posting it
+                        const defectId = result[0];
                         // and the file is loaded based on the file ID
                         const file = result[1];
 
-                        if (uuid && file) {
-                            file.uuid = uuid;
+                        if (defectId && file) {
+                            file.defectId = defectId;
                             self.updateFile(file).then(_ => console.log(
-                                `File ${json.fileId} has been updated to UUID [${uuid}] :)`));
+                                `File ${json.fileId} has been updated to defect ID [${defectId}] :)`));
                         }
                     });
                 }

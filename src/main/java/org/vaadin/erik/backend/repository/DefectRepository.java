@@ -6,6 +6,4 @@ import org.vaadin.erik.backend.entity.Defect;
 
 @Repository
 public interface DefectRepository extends CrudRepository<Defect, Long> {
-
-    Defect findByUuid(String uuid);
 }
