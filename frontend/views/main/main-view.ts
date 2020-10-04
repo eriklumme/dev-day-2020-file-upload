@@ -5,8 +5,10 @@ import { AppLayoutElement } from '@vaadin/vaadin-app-layout/src/vaadin-app-layou
 import '@vaadin/vaadin-app-layout/vaadin-drawer-toggle';
 import '@vaadin/vaadin-tabs/theme/lumo/vaadin-tab';
 import '@vaadin/vaadin-tabs/theme/lumo/vaadin-tabs';
+import '@vaadin/vaadin-notification';
 import { CSSModule } from '@vaadin/flow-frontend/css-utils';
 import { router } from '../../index';
+import {NotificationElement} from "@vaadin/vaadin-notification/src/vaadin-notification";
 
 // Rename to something more appropriate.
 interface MenuTab {
@@ -138,6 +140,23 @@ export class MainView extends LitElement {
   private _routerLocationChanged() {
     // @ts-ignore
     AppLayoutElement.dispatchCloseOverlayDrawerEvent();
+  }
+
+  protected firstUpdated() {
+    if (!window.showNotification) {
+      window.showNotification = (message: string, theme?: string) => {
+        const notification = <NotificationElement> document.createElement('vaadin-notification');
+        notification.renderer = (root: any, _owner: any) => {
+          root.textContent = message;
+        }
+        if (theme) {
+          notification.setAttribute("theme", theme);
+        }
+        notification.opened = true;
+        window.document.body.appendChild(notification);
+        notification.addEventListener('opened-changed', () => window.document.body.removeChild(notification));
+      }
+    }
   }
 
   connectedCallback() {

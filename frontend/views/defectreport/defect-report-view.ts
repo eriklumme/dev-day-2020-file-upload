@@ -61,14 +61,14 @@ export class DefectReportView extends LitElement {
         if (this.descriptionField.validate()) {
             this._storeFile().then(_ => {
                 ReportDefectEndpoint.postDefect(this.descriptionField.value)
-                    .then(defectId => {
-                        this.defectId = defectId;
-                        this.shadowRoot?.querySelectorAll('vaadin-upload-file')
-                            .forEach((el: any) => el.classList.remove('no-auto'));
-                        this.uploadField.uploadFiles();
+                    .then(_ => {
+                        this.defectId = undefined;
+                        this.uploadField.files = [];
+                        this.descriptionField.value = '';
+                        window.showNotification('Defect has been posted', 'success');
                     })
                     .catch(e => {
-                        alert("An error occurred.");
+                        window.showNotification('An error occurred, the defect could not been posted', 'error');
                         console.error(e);
                     });
             });
@@ -84,20 +84,6 @@ export class DefectReportView extends LitElement {
     }
 
     protected firstUpdated() {
-        this.uploadField.addEventListener('upload-request', (e: any) => {
-            e.detail.formData.append('defect_id', this.defectId);
-        });
-        this.uploadField.addEventListener('upload-response', (e: any) => {
-            const status = e.detail.xhr.status;
-            if (status >= 200 && status < 300) {
-                this.defectId = undefined;
-                this.uploadField.files = [];
-                this.descriptionField.value = '';
-                alert('Defect has been posted');
-            } else {
-                alert("An error occurred while attempting to upload the file");
-            }
-        });
         this.uploadField.addEventListener('upload-progress', this._updateFiles.bind(this));
         this.uploadField.addEventListener('upload-success', this._updateFiles.bind(this));
         this.uploadField.addEventListener('files-changed', (_: any) => this.requestUpdate());

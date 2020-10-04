@@ -26,16 +26,16 @@ self.addEventListener('fetch', function(event) {
 
 });
 
+
+const defectQueue = new workbox.backgroundSync.Queue('defect-queue');
+
 // Defect posts
 self.addEventListener('fetch', async function(event) {
     const request = event.request;
     if (request.url.endsWith('/postDefect')) {
-        console.log("Logging request 7");
-        const requestClone = event.request.clone();
+        return fetch(request.clone()).then(response => {
 
-        return fetch(request).then(response => {
-
-            requestClone.json().then(json => {
+            request.json().then(json => {
                 // Extract the fileId from the JSON payload of the request
                 if (json.fileId) {
                     Promise.all([
@@ -49,14 +49,13 @@ self.addEventListener('fetch', async function(event) {
 
                         if (defectId && file) {
                             file.defectId = defectId;
-                            self.updateFile(file).then(_ => console.log(
-                                `File ${json.fileId} has been updated to defect ID [${defectId}] :)`));
+                            self.updateFile(file).then(e => console.error(e));
                         }
                     });
                 }
             });
 
             return response;
-        });
+        }).catch(() => defectQueue.pushRequest({request: request}));
     }
 });
