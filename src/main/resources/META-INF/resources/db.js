@@ -46,38 +46,3 @@ const _dbActions = table => {
 
 self.FileActions = () => _dbActions(FILES);
 self.DefectActions = () => _dbActions(DEFECTS);
-//
-// /**
-//  * Adds a file and returns its ID
-//  */
-// const addFile = function(file) {
-//     return self._createFileDB()
-//         .then(db => {
-//             const tx = db.transaction(FILES, 'readwrite');
-//             return Promise.all([
-//                 tx.store.add({ file }),
-//                 tx.done
-//             ]).then(result => result[0]);
-//         });
-// }
-//
-// /**
-//  * Gets a file based on its ID
-//  */
-// const getFile = function(id) {
-//     return self._createFileDB().then(db => db.get(FILES, id));
-// }
-//
-// /**
-//  * Deletes the file with the given ID
-//  */
-// const removeFile = function(id) {
-//     return self._createFileDB().then(db => db.delete(FILES, id));
-// }
-//
-// /**
-//  * Updates a file object
-//  */
-// const updateFile = function(fileObj) {
-//     return self._createFileDB().then(db => db.put(FILES, fileObj));
-// }

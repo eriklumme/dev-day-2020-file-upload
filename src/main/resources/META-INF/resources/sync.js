@@ -138,5 +138,3 @@ _postFile = async file => {
         console.log(response);
     });
 };
-
-console.warn("Sync 3");
