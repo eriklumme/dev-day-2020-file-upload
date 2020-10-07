@@ -26,7 +26,9 @@ const _dbActions = table => {
                 return Promise.all([
                     tx.store.add(object),
                     tx.done
-                ]).then(result => result[0]);
+                ]).then(result => {
+                    return result[0]
+                });
             })
         },
         async get(id) {

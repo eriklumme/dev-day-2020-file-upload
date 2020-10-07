@@ -8,8 +8,6 @@ const SYNC_ENABLED = 'sync' in self.registration;
  * If sync is enabled, add a listener for it. Otherwise, run _onSync immediately.
  */
 if (SYNC_ENABLED) {
-    console.warn("Sync is enabled");
-
     self.addEventListener('sync', async e => {
         if (e.tag === SYNC_TAG) {
             let error;
@@ -20,7 +18,6 @@ if (SYNC_ENABLED) {
                 throw e;
             } finally {
                 if (error && e.lastChance) {
-                    console.warn("Last chance");
                     await _requestSync();
                 }
             }
@@ -37,17 +34,26 @@ if (SYNC_ENABLED) {
 self.addEventListener('fetch', async function(event) {
     const request = event.request;
     if (request.url.endsWith('/postDefect')) {
-        event.respondWith(
-            fetch(request.clone())
-                .then(response => {
-                    _onDefectPosted(request, response.clone());
-                    return response;
-                })
-                .catch(e => {
-                    self.DefectActions.add({request});
-                    throw e;
-                }).finally(() => _requestSync())
-        );
+        let error;
+        const fetchPromise = fetch(request.clone())
+            .then(response => {
+                if (!response.ok) {
+                    throw `Failed to post defect, status is ${response.status}`;
+                }
+                _onDefectPosted(request.clone(), response.clone());
+                return response;
+            })
+            .catch(e => {
+                error = e;
+                return _requestToDefect(request)
+                    .then(defect => self.DefectActions().add(defect))
+                    .then(() => {
+                        throw error;
+                    });
+            })
+            .finally(() => _requestSync())
+        event.respondWith(fetchPromise);
+        event.waitUntil(fetchPromise);
     }
 });
 
@@ -60,9 +66,9 @@ _onSync = async function() {
     defects = defects.sort((a, b) => a.id < b.id ? -1 : 1);
     for(let defect of defects) {
         try {
-            console.warn(`Replaying request ${defect.id}`);
-            const response = await fetch(defect.request.clone());
-            await _onDefectPosted(defect.request, response);
+            const request = _defectToRequest(defect);
+            const response = await fetch(request.clone());
+            await _onDefectPosted(request, response);
             await defectActions.remove(defect.id);
         } catch (e) {
             console.warn(`Could not replay request with ID [${defect.id}`);
@@ -75,16 +81,13 @@ _onSync = async function() {
     files = files.sort((a, b) => a.id < b.id ? -1 : 1).filter(file => file.defectId);
     for(let file of files) {
         try {
-            console.warn(`Posting file ${file.id}`);
             await _postFile(file);
-            await defectActions.remove(file.id);
+            await fileActions.remove(file.id);
         } catch (e) {
             console.warn(`Could not post file with ID [${file.id}`);
             throw e;
         }
     }
-
-    console.warn("Sync completed");
 };
 
 
@@ -94,7 +97,7 @@ _requestSync = async () => {
     }
 }
 
-_onDefectPosted = async function(request, response, cached) {
+_onDefectPosted = async function(request, response) {
     await request.json().then(json => {
         // Extract the fileId from the JSON payload of the request
         if (json.fileId) {
@@ -102,11 +105,6 @@ _onDefectPosted = async function(request, response, cached) {
                 response.text(),
                 self.FileActions().get(json.fileId)
             ]);
-        }
-        if (cached) {
-            console.warn("It was cached!");
-        } else {
-            console.warn("It was NOT cached!");
         }
     }).then(result => {
         if (result?.length > 1) {
@@ -120,21 +118,40 @@ _onDefectPosted = async function(request, response, cached) {
                 return self.FileActions().update(file);
             }
         }
-    }).then(e => console.error("Updated! " + e));
+    });
 }
 
 _postFile = async file => {
-    console.warn("Posting file..");
     const formData = new FormData();
     formData.append('file', file.file);
     formData.append('defectId', file.defectId);
-    console.log(file);
 
     return await fetch('/file', {
         method: 'POST',
         body: formData
     }).then(response => {
-        console.log("Response");
-        console.log(response);
+        if (!response.ok) {
+            throw `Failed to post file, status is ${response.status}`;
+        }
     });
 };
+
+_requestToDefect = async function(request) {
+    const headers = {};
+    for (const [key, value] of request.headers.entries()) {
+        headers[key] = value;
+    }
+    return {
+        url: request.url,
+        data: {
+            method: request.method,
+            headers: headers,
+            body: await request.clone().arrayBuffer()
+        }
+    }
+}
+
+_defectToRequest = function(defect) {
+    return new Request(defect.url, defect.data);
+}
+
