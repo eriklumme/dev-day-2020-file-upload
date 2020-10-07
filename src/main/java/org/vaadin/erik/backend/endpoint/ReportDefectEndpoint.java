@@ -17,7 +17,7 @@ public class ReportDefectEndpoint {
         this.defectService = defectService;
     }
 
-    public Long postDefect(@NotBlank String description) {
+    public Long postDefect(@NotBlank String description, Object fileId) {
         Defect defect = defectService.createDefect(description);
         return defect.getId();
     }

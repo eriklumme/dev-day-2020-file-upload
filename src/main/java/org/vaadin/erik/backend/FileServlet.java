@@ -40,7 +40,7 @@ public class FileServlet extends HttpServlet {
                 return;
             }
 
-            defectIdString = req.getParameter("defect_id");
+            defectIdString = req.getParameter("defectId");
             long defectId = Long.parseLong(defectIdString);
 
             byte[] data = new byte[(int) filePart.getSize()];

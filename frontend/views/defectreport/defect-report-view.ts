@@ -5,6 +5,8 @@ import '@vaadin/vaadin-upload/src/vaadin-upload-file';
 import {css, customElement, html, LitElement, query} from 'lit-element';
 import { CSSModule } from '@vaadin/flow-frontend/css-utils';
 
+import '../../../src/main/resources/META-INF/resources/db';
+
 import * as ReportDefectEndpoint from '../../generated/ReportDefectEndpoint';
 
 @customElement('defect-report-view')
@@ -59,8 +61,8 @@ export class DefectReportView extends LitElement {
 
     _reportDefect() {
         if (this.descriptionField.validate()) {
-            this._storeFile().then(_ => {
-                ReportDefectEndpoint.postDefect(this.descriptionField.value)
+            this._storeFile().then(fileId => {
+                ReportDefectEndpoint.postDefect(this.descriptionField.value, fileId)
                     .then(_ => {
                         this.defectId = undefined;
                         this.uploadField.files = [];
@@ -68,8 +70,8 @@ export class DefectReportView extends LitElement {
                         window.showNotification('Defect has been posted', 'success');
                     })
                     .catch(e => {
-                        window.showNotification('An error occurred, the defect could not been posted', 'error');
-                        console.error(e);
+                        window.showNotification('You will be notified when your defect has been posted');
+                        console.warn(e);
                     });
             });
         }
@@ -80,7 +82,7 @@ export class DefectReportView extends LitElement {
             return Promise.resolve(null);
         }
         const file = this.uploadField.files[0];
-        return window.addFile(file);
+        return window.FileActions().add({file});
     }
 
     protected firstUpdated() {

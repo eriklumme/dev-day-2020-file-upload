@@ -9,6 +9,8 @@ declare module '*.css' {
 }
 
 interface Window {
-    addFile(file: any): Promise<any>;
+    FileActions: () => {
+        add(file: any): Promise<any>
+    }
     showNotification(message: string, theme?: string): void;
 }
