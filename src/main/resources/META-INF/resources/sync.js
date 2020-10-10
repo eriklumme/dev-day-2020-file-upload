@@ -40,8 +40,7 @@ self.addEventListener('fetch', async function(event) {
                 if (!response.ok) {
                     throw `Failed to post defect, status is ${response.status}`;
                 }
-                _onDefectPosted(request.clone(), response.clone());
-                return response;
+                return _onDefectPosted(request.clone(), response.clone()).then(() => response);
             })
             .catch(e => {
                 error = e;
@@ -51,7 +50,7 @@ self.addEventListener('fetch', async function(event) {
                         throw error;
                     });
             })
-            .finally(() => _requestSync())
+            .finally(() => _onSync())
         event.respondWith(fetchPromise);
         event.waitUntil(fetchPromise);
     }
@@ -107,7 +106,7 @@ _onDefectPosted = async function(request, response) {
             ]);
         }
     }).then(result => {
-        if (result?.length > 1) {
+        if (result && result.length > 1) {
             // The defect's ID is returned from the server after posting it
             const defectId = result[0];
             // and the file is loaded based on the file ID

@@ -32,7 +32,6 @@ public class FileServlet extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        String defectIdString = null;
         try {
             Part filePart = req.getPart("file");
             if (filePart == null) {
@@ -40,7 +39,7 @@ public class FileServlet extends HttpServlet {
                 return;
             }
 
-            defectIdString = req.getParameter("defectId");
+            String defectIdString = req.getParameter("defectId");
             long defectId = Long.parseLong(defectIdString);
 
             byte[] data = new byte[(int) filePart.getSize()];
@@ -49,14 +48,13 @@ public class FileServlet extends HttpServlet {
 
         } catch (IllegalStateException | IOException e) {
             if (e.getCause() instanceof SizeLimitExceededException) {
-                resp.sendError(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE,
-                        "The file exceeds the upload size limit of " + FILE_SIZE_LIMIT_MB + " MB");
+                resp.setStatus(HttpServletResponse.SC_REQUEST_ENTITY_TOO_LARGE);
             } else {
                 logger.error("Internal error occurred while processing upload", e);
-                resp.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "An internal error occurred");
+                resp.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
             }
         } catch (NumberFormatException e) {
-            resp.sendError(HttpServletResponse.SC_BAD_REQUEST, "Invalid defect_id [" + defectIdString + "]");
+            resp.setStatus(HttpServletResponse.SC_BAD_REQUEST);
         }
     }
 }

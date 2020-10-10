@@ -10,7 +10,7 @@ $_documentContainer.innerHTML = `
     }
     .defect-reports {
         display: grid;
-        grid-template-columns: auto auto auto;
+        grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
         grid-gap: var(--lumo-space-l);
         padding: var(--lumo-space-l);
         background-color: var(--lumo-contrast-10pct);
@@ -29,7 +29,10 @@ $_documentContainer.innerHTML = `
     .defect-image {
         display: flex;
         justify-content: center;
+        align-items: center;
         width: 100%;
+        height: 100%;
+        min-height: 80px;
     }
     .defect-image img {
         width: auto;

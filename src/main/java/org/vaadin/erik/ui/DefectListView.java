@@ -5,6 +5,7 @@ import com.vaadin.flow.component.Component;
 import com.vaadin.flow.component.Text;
 import com.vaadin.flow.component.html.Div;
 import com.vaadin.flow.component.html.Image;
+import com.vaadin.flow.component.icon.VaadinIcon;
 import com.vaadin.flow.component.orderedlayout.HorizontalLayout;
 import com.vaadin.flow.component.orderedlayout.VerticalLayout;
 import com.vaadin.flow.router.Route;
@@ -31,9 +32,7 @@ public class DefectListView extends Div {
     private void createDefectCard(Defect defect) {
         Div defectCard = new Div();
         defectCard.addClassName("defect-card");
-        if (defect.getImage() != null) {
-            defectCard.add(createImage(defect));
-        }
+        defectCard.add(createImage(defect));
         Div textDiv = new Div(new Text(defect.getDescription()));
         textDiv.addClassName("defect-text");
         defectCard.add(textDiv);
@@ -41,10 +40,16 @@ public class DefectListView extends Div {
     }
 
     private Component createImage(Defect defect) {
-        byte[] data = defect.getImage().getData();
-        String filename = defect.getImage().getFilename();
-        StreamResource streamResource = new StreamResource(filename, () -> new ByteArrayInputStream(data));
-        Image image = new Image(streamResource, filename);
+        Component image;
+        if (defect.getImage() != null) {
+            byte[] data = defect.getImage().getData();
+            String filename = defect.getImage().getFilename();
+            StreamResource streamResource = new StreamResource(filename, () -> new ByteArrayInputStream(data));
+            image = new Image(streamResource, filename);
+        } else {
+            image = new VerticalLayout(VaadinIcon.FILE_PICTURE.create(), new Text("No image"));
+            image.getElement().getStyle().set("align-items", "center");
+        }
         Div wrapper = new Div(image);
         wrapper.addClassName("defect-image");
         return wrapper;
