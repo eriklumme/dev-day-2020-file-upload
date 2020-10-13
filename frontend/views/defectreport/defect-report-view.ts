@@ -55,13 +55,13 @@ export class DefectReportView extends LitElement {
                     `)}
                 </div>
             </vaadin-upload>
-            <vaadin-button theme="primary" @click="${this._reportDefect}">Report defect</vaadin-button>
+            <vaadin-button theme="primary" @click="${this.reportDefect}">Report defect</vaadin-button>
     `;
     }
 
-    _reportDefect() {
+    private reportDefect() {
         if (this.descriptionField.validate()) {
-            this._storeFile().then(fileId => {
+            this.storeFile().then(fileId => {
                 ReportDefectEndpoint.postDefect(this.descriptionField.value, fileId)
                     .then(_ => {
                         this.defectId = undefined;
@@ -77,7 +77,7 @@ export class DefectReportView extends LitElement {
         }
     }
 
-    _storeFile(): Promise<any> {
+    private storeFile(): Promise<any> {
         if (this.uploadField.files.length == 0) {
             return Promise.resolve(null);
         }
@@ -86,12 +86,12 @@ export class DefectReportView extends LitElement {
     }
 
     protected firstUpdated() {
-        this.uploadField.addEventListener('upload-progress', this._updateFiles.bind(this));
-        this.uploadField.addEventListener('upload-success', this._updateFiles.bind(this));
+        this.uploadField.addEventListener('upload-progress', this.updateFiles.bind(this));
+        this.uploadField.addEventListener('upload-success', this.updateFiles.bind(this));
         this.uploadField.addEventListener('files-changed', (_: any) => this.requestUpdate());
     }
 
-    _updateFiles() {
+    private updateFiles() {
         this.shadowRoot?.querySelectorAll('vaadin-upload-file').forEach((el: any) => {
             for(let p in el.file) {
                 if (el.file.hasOwnProperty(p)) {

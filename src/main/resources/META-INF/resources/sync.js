@@ -10,17 +10,20 @@ const SYNC_ENABLED = 'sync' in self.registration;
 if (SYNC_ENABLED) {
     self.addEventListener('sync', async e => {
         if (e.tag === SYNC_TAG) {
-            let error;
-            try {
-                e.waitUntil(_onSync());
-            } catch (e) {
-                error = true;
-                throw e;
-            } finally {
-                if (error && e.lastChance) {
-                    await _requestSync();
+            const action = async () => {
+                let error;
+                try {
+                    await _onSync();
+                } catch (e) {
+                    error = true;
+                    throw e;
+                } finally {
+                    if (error && e.lastChance) {
+                        await _requestSync();
+                    }
                 }
-            }
+            };
+            e.waitUntil(action());
         }
     });
 } else {
@@ -31,28 +34,26 @@ if (SYNC_ENABLED) {
 /**
  * Save failed defect requests to the DB
  */
-self.addEventListener('fetch', async function(event) {
+self.addEventListener('fetch', async event => {
     const request = event.request;
     if (request.url.endsWith('/postDefect')) {
-        let error;
-        const fetchPromise = fetch(request.clone())
+        event.respondWith(fetch(request.clone())
             .then(response => {
                 if (!response.ok) {
                     throw `Failed to post defect, status is ${response.status}`;
                 }
-                return _onDefectPosted(request.clone(), response.clone()).then(() => response);
+                event.waitUntil(_onDefectPosted(
+                    request.clone(),
+                    response.clone()
+                ).then(_onSync));
+                return response;
             })
             .catch(e => {
-                error = e;
-                return _requestToDefect(request)
-                    .then(defect => self.DefectActions().add(defect))
-                    .then(() => {
-                        throw error;
-                    });
+                event.waitUntil(_requestToDefect(request.clone())
+                    .then(defect => self.DefectActions().add(defect)));
+                throw e;
             })
-            .finally(() => _onSync())
-        event.respondWith(fetchPromise);
-        event.waitUntil(fetchPromise);
+        );
     }
 });
 
@@ -145,7 +146,7 @@ _requestToDefect = async function(request) {
         data: {
             method: request.method,
             headers: headers,
-            body: await request.clone().arrayBuffer()
+            body: await request.arrayBuffer()
         }
     }
 }
