@@ -1,6 +1,11 @@
 # Custom project from start.vaadin.com
 
-## Log in with user/password
+## File upload on bad connections PoC
+
+Log in with user/password
+Service worker files in `src/main/resources/META-INF/resources`
+
+## 
 
 This project was created from https://start.vaadin.com. It's a fully working Vaadin application that you continue developing locally.
 It has all the necessary dependencies and files to help you get going.
