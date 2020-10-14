@@ -1,5 +1,7 @@
 # Custom project from start.vaadin.com
 
+## Log in with user/password
+
 This project was created from https://start.vaadin.com. It's a fully working Vaadin application that you continue developing locally.
 It has all the necessary dependencies and files to help you get going.
 
